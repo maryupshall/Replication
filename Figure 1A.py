@@ -28,7 +28,7 @@ for i in range(len(v)):
     h = state[:, 1]
     hs = state[:, 2]
     I_Na = INa(v[i], m_inf(v[i]), parameters)
-    #(parameters[1] * (m_inf(v_list[i]) ** 3) * (v_list[i] - parameters[4]))  # without h & hs_list
+    # (parameters[1] * (m_inf(v_list[i]) ** 3) * (v_list[i] - parameters[4]))  # without h & hs_list
     # I_Na= (parameters[1]*(m_inf(v_list[i])**3)*h[-1]*hs_list[-1]*(v_list[i]-parameters[4])) #with h & hs_list doesn't work
 
     v_clamp = v
