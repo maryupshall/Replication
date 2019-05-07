@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from ode_functions.gating import *
 from ode_functions.diff_eq import ode_2d
 from ode_functions.defaults import default_parameters
+from plotting import *
 
 tmax = 3000  # ms
 dt = 0.1
@@ -34,12 +35,9 @@ stimulus[t_solved > stim_time] = currents[1]
 
 # plotting
 plt.subplot(2, 1, 1)
-plt.plot(t_solved, solution[:, 0])
-plt.xlabel('time', size=10)
-plt.ylabel('v_list (mV)', size=10)
-plt.ylim(-80, 60)
+plt.plot(t_solved, solution[:, 0], "k")
+set_properties(ylabel="V (mV)", ytick=[-40, -20, 0, 20])
 
 plt.subplot(2, 1, 2)
-plt.plot(t_solved, stimulus)
-plt.xlabel('time (ms)', size=14)
-plt.ylabel('I_app', size=14)
+plt.plot(t_solved, stimulus, "k")
+set_properties(None)

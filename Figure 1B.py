@@ -1,10 +1,10 @@
 from scipy.integrate import odeint
-import numpy as np
 import matplotlib.pyplot as plt
 from ode_functions.gating import *
 from ode_functions.diff_eq import ode_3d, voltage_clamp
 from ode_functions.defaults import default_parameters
 from ode_functions.current import INa
+from plotting import *
 
 ## Doesn't work with INa model including h and hs_list but works without.
 

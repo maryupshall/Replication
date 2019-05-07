@@ -1,9 +1,8 @@
 from scipy.integrate import odeint
-import numpy as np
-import matplotlib.pyplot as plt
 from ode_functions.gating import *
 from ode_functions.diff_eq import ode_5d, ode_3d
 from ode_functions.defaults import default_parameters
+from plotting import *
 
 # Parameter values
 ode_functions = [ode_3d, ode_5d]
@@ -16,8 +15,11 @@ for ix, ode_function in enumerate(ode_functions):
 
     state = odeint(ode_function, state0, t, args=(parameters,), atol=1e-3)
 
-    plt.figure()
-    plt.plot(t, state[:, 0])
+    plt.subplot(2,1,ix+1)
+    if ix == 0:
+        plt.title("D1")
+    else:
+        plt.title("D2")
+    plt.plot(t, state[:, 0], "k")
 
-    plt.ylim(-80, 20)
-    plt.xlim(-20, 4300)
+    set_properties(ylabel="v (mV)", ytick= [-80, -40 , 0])

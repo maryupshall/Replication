@@ -1,10 +1,10 @@
 from scipy.integrate import odeint
-import numpy as np
-import matplotlib.pyplot as plt
 from ode_functions.gating import *
 from ode_functions.diff_eq import ode_3d, voltage_clamp
 from ode_functions.defaults import default_parameters
 from ode_functions.current import INa
+from plotting import *
+
 
 parameters = default_parameters(gNa=0.00000592 / 2)  # need to divide given value by 2 to get correct graph
 parameters.append(ode_3d)
@@ -35,7 +35,6 @@ for i in range(len(v)):
     I_Na_max = np.max(I_Na)
     Na_current[i] = I_Na_max
 
-plt.plot(v_clamp, Na_current)
-plt.xlim(-80, 60)
-plt.xlabel("Voltage (mv)")
-plt.ylabel("peak I_list(Na) (uA/cm^2)")
+plt.plot(v_clamp, Na_current*1e6)
+set_properties(xlabel="v (mV)", ylabel="peak I$_{Na}$", xtick=[-80,-40,0,40], ytick= [-160, 0])
+

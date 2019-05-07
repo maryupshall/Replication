@@ -1,9 +1,9 @@
 from scipy.integrate import odeint
-import matplotlib.pyplot as plt
 from ode_functions.gating import *
 from ode_functions.defaults import default_parameters
 from ode_functions.diff_eq import ode_2d, ode_3d, voltage_clamp
 from ode_functions.current import I_na_hack
+from plotting import *
 
 ode_functions = [ode_2d, ode_3d]
 
@@ -32,11 +32,9 @@ for ix, ode_function in enumerate(ode_functions):
     plt.figure()
     plt.plot(v_list, membrane_current)
     if ix == 0:
-        plt.xlim(-100, 0)
-        plt.ylim([-5, 5])
+        set_properties(xlabel= "Voltage (mV)", ylabel= "I$_{stim} ( \mu A/cm^{2}$)", xtick=[-80, -40], ytick=[-5,0,5], xlim=(-100, -20), ylim=(-5, 5))
+        plt.title("C1 Nonmonotonic IV curve")
     else:
-        plt.xlim(-70,-50)
-        plt.ylim([-0.1, 0.2])
+        set_properties(xlabel= "Voltage (mV)", ylabel= "I$_{stim} ( \mu A/cm^{2}$)", xtick=[-70, -60, -50], ytick=[-0.1,0,0.1,0.2], xlim=(-70, -50), ylim=(-0.1, 0.2))
+        plt.title("C2 Monotonic IV curve")
 
-    plt.xlabel("Voltage (mv)")
-    plt.ylabel("I_list (uA/cm^2)")

@@ -1,8 +1,8 @@
 from scipy.integrate import odeint
-import matplotlib.pyplot as plt
 from ode_functions.gating import *
 from ode_functions.diff_eq import ode_3d
 from ode_functions.defaults import default_parameters
+from plotting import *
 
 tmax = 10000  # ms
 dt = 0.01
@@ -35,11 +35,8 @@ stimulus[t_solved > stim_time] = currents[1]
 # plotting
 plt.subplot(2, 1, 1)
 plt.plot(t_solved, solution[:, 0])
-plt.xlabel('time', size=10)
-plt.ylabel('$V_m$ (mV)', size=10)
-plt.ylim(-80, 60)
+set_properties(ylabel='$V_m$ (mV)', ytick= [-40,0], ylim=(-80, 20))
 
 plt.subplot(2, 1, 2)
 plt.plot(t_solved, stimulus)
-plt.xlabel('time (ms)', size=10)
-plt.ylabel('$I_{app}$', size=10)
+set_properties(None)

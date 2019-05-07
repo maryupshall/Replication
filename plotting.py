@@ -10,11 +10,11 @@ def save_fig(name, extension='pdf'):
     figure_path = 'figures'
     plt.tight_layout()
 
-    plt.savefig(join(figure_path, name+'.'+extension), format=extension)
+    plt.savefig(join(figure_path, name + '.' + extension), format=extension)
     plt.close('all')
 
 
-def set_properties(xlabel="", ylabel="", xtick=[], ytick=[]):
+def set_properties(xlabel="", ylabel="", xtick=[], ytick=[], xlim=None, ylim=None):
     plot_label_size = 10
     tick_label_size = 8
 
@@ -22,5 +22,8 @@ def set_properties(xlabel="", ylabel="", xtick=[], ytick=[]):
     plt.ylabel(ylabel, size=plot_label_size)
     plt.xticks(xtick, size=tick_label_size)
     plt.yticks(ytick, size=tick_label_size)
+
+    plt.xlim(xlim)
+    plt.ylim(ylim)
 
     plt.tight_layout()

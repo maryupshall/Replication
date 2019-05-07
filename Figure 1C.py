@@ -1,13 +1,11 @@
 from scipy.integrate import odeint
-import numpy as np
-import matplotlib.pyplot as plt
 from ode_functions.gating import *
 from ode_functions.diff_eq import ode_5d
 from ode_functions.defaults import default_parameters
+from plotting import *
 
 #Parameter values
 parameters = default_parameters()
-
 
 tmax=4200
 dt = 0.01 #time step
@@ -20,8 +18,7 @@ v = state[:, 0]
 h = state[:, 1]
 n = state[:, 4]
 
-plt.plot(h,n)
-plt.plot(h,list(map(f,h)))
-plt.xlabel("h")
-plt.ylabel("n")
+plt.plot(h,n, c="grey")
+plt.plot(h,list(map(f,h)), "k")
+set_properties(xlabel="h", ylabel="n", xtick=[0, 0.2, 0.4, 0.6], ytick= np.arange(0, 1, 0.2))
 plt.legend(["n", "n=f(h)"])

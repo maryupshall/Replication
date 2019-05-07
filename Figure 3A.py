@@ -7,8 +7,7 @@ from plotting import *
 tmax = 6000  # ms
 dt = 0.1
 stim_time = 2000  # ms; pulse y at this time
-initial_state = [-55, 0, 0]  # v_list, h
-state0 = initial_state
+state0 = [-55, 0, 0]  # v_list, h
 t_solved = np.array([])
 solution = np.array([0, 0, 0])
 currents = [0, 0.16]
@@ -32,7 +31,7 @@ solution = solution[1:, :]  # TODO: hack for starting shape
 stimulus = np.zeros(t_solved.shape)
 stimulus[t_solved > stim_time] = currents[1]
 
-init_figure(size=(4,3))
+init_figure(size=(4, 3))
 
 # plotting
 plt.subplot(3, 1, 1)

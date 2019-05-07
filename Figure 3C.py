@@ -1,9 +1,8 @@
 from scipy.integrate import odeint
-import numpy as np
-import matplotlib.pyplot as plt
 from ode_functions.gating import *
 from ode_functions.diff_eq import hs_clamp, ode_3d
 from ode_functions.defaults import default_parameters
+from plotting import *
 
 parameters=default_parameters(I_app=0.16)
 t = np.arange(0, 10000, 0.1)
@@ -22,8 +21,7 @@ vmin_all = np.zeros(len(hs))
 
 # Bifurcation:
 for i in range(len(hs)):
-    initial_state = [-55, 0, hs[i]]
-    state0 = initial_state
+    state0 = [-55, 0, hs[i]]
     parameters = default_parameters(I_app=0.16)
 
     state = odeint(hs_clamp, state0, t, args=(parameters,))
@@ -39,4 +37,6 @@ for i in range(len(hs)):
 plt.plot(hs, vmax_all, "--", c="black")
 plt.plot(hs, vmin_all, "--", c="black")
 plt.plot(trajectory[:, 2], trajectory[:, 0])
+set_properties(xlabel="h$_{s}$", ylabel= "v (mV)", xtick= [0, 0.2, 0.4, 0.6, 0.8, 1], ytick= [-80, -40, 0, 40])
+
 
