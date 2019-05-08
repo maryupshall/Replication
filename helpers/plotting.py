@@ -1,5 +1,6 @@
-import matplotlib.pyplot as plt
 from os.path import join
+
+import matplotlib.pyplot as plt
 
 
 def init_figure(size=(2, 2), dpi=96):

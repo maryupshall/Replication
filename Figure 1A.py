@@ -1,40 +1,28 @@
 from scipy.integrate import odeint
-from ode_functions.gating import *
-from ode_functions.diff_eq import ode_3d, voltage_clamp
-from ode_functions.defaults import default_parameters
-from ode_functions.current import INa
-from plotting import *
 
+from ode_functions.current import INa
+from ode_functions.defaults import default_parameters
+from ode_functions.diff_eq import ode_3d, voltage_clamp
+from ode_functions.gating import *
+from helpers.plotting import *
 
 parameters = default_parameters(gNa=0.00000592 / 2)  # need to divide given value by 2 to get correct graph
 parameters.append(ode_3d)
 
-vmin = -100
-vmax = 60
-vstep = 0.5
-v = np.arange(vmin, vmax, vstep)
-
-tmax = 1000  # ms
-dt = 0.1
-t = np.arange(0, tmax, dt)
+v = np.arange(-100, 60, 0.5)
+t = np.arange(0, 1000, 0.1)
 
 Na_current = np.zeros(len(v))
 
 for i in range(len(v)):
-    initial_state = [v[i], 0, 0]  # v_list, h, hs_list
-    state0 = initial_state
+    ic = [v[i], 0, 0]
 
-    state = odeint(voltage_clamp, state0, t, args=(parameters,))
-    h = state[:, 1]
-    hs = state[:, 2]
+    state = odeint(voltage_clamp, ic, t, args=(parameters,))
     I_Na = INa(v[i], m_inf(v[i]), parameters)
-    # (parameters[1] * (m_inf(v_list[i]) ** 3) * (v_list[i] - parameters[4]))  # without h & hs_list
-    # I_Na= (parameters[1]*(m_inf(v_list[i])**3)*h[-1]*hs_list[-1]*(v_list[i]-parameters[4])) #with h & hs_list doesn't work
 
-    v_clamp = v
-    I_Na_max = np.max(I_Na)
-    Na_current[i] = I_Na_max
+    Na_current[i] = np.max(I_Na) * 1e6
 
-plt.plot(v_clamp, Na_current*1e6)
-set_properties(xlabel="v (mV)", ylabel="peak I$_{Na}$", xtick=[-80,-40,0,40], ytick= [-160, 0])
-
+init_figure(size=(5, 3))
+plt.plot(v, Na_current, 'k')
+set_properties(xlabel="V (mV)", ylabel="peak I$_{Na}$", xtick=[-80, -40, 0, 40], ytick=[-160, 0])
+save_fig('1A')

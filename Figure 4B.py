@@ -2,7 +2,7 @@ from scipy.integrate import odeint
 from ode_functions.gating import *
 from ode_functions.diff_eq import ode_2d, ode_3d
 from ode_functions.defaults import default_parameters
-from plotting import *
+from helpers.plotting import *
 
 ode_functions = [ode_2d, ode_3d]
 I_list = np.arange(-5, 5, 0.01)  #uA/cm^2

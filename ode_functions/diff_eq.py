@@ -1,4 +1,3 @@
-import numpy as np
 from ode_functions.gating import *
 
 

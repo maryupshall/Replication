@@ -1,34 +1,25 @@
-from scipy.optimize import newton
 from ode_functions.gating import *
-from ode_functions.defaults import default_parameters
-from ode_functions.current import nc
-from plotting import *
+from helpers.plotting import *
+from helpers.nullclines import nullcline_h, nullcline_v
 
-I_list_set=[[0,3.5],[0.16,0.16,0.16]]
-hs_list_set=[[1,1],[0.6,0.2,0.05]]
+I_list_set = [[0, 3.5], [0.16, 0.16, 0.16]]
+hs_list_set = [[1, 1], [0.6, 0.2, 0.05]]
 v = np.arange(-90, 50)
 
-dh_null = (h_inf(v))
-null_solve = np.zeros((len(v), 2))
+nh = nullcline_h(v)
 
-for figure_ix, (I_list, hs_list) in enumerate(zip(I_list_set, hs_list_set)):
-    plt.subplot(1,2,figure_ix+1)
-    for ix, (I, hs) in enumerate(zip(I_list, hs_list)):
-        print(hs)
-        parameters = default_parameters(I_app=I)
-        plt.plot(v, dh_null, c="cornflowerblue")
+init_figure(size=(5,3))
+for ix, (I_list, hs_list) in enumerate(zip(I_list_set, hs_list_set)):
+    plt.subplot(1, 2, ix + 1)
+    plt.plot(v, nh, 'g')
+    for iy, (I, hs) in enumerate(zip(I_list, hs_list)):
+        nv = nullcline_v(v, I, hs=hs)
+        plt.plot(v, nv, 'r')
 
-        for i in range(len(v)):
-            h_solve = newton(lambda h: nc(h, v[i], parameters, hs=hs), 0)  # calculate h value where dv=0
-
-            null_solve[i, 0] = v[i]
-            null_solve[i, 1] = h_solve
-
-        plt.plot(null_solve[:, 0], null_solve[:, 1], c="red")
-
-    if figure_ix == 0:
-        set_properties(xlabel = "v (mV)", ylabel= "h", xtick=[-40, 0], ytick= [0, 0.05, 0.1, 0.15], xlim=(-40, 5), ylim= (0, 0.15))
-        plt.title("A1 Right shift")
+    if ix == 0:
+        set_properties(xlabel="v (mV)", ylabel="h", xtick=[-40, 0], ytick=[0, 0.05, 0.1, 0.15], xlim=(-40, 5),
+                       ylim=(0, 0.15))
     else:
-        set_properties(xlabel = "v (mV)", ylabel= "h", xtick=[-60, 20], ytick= [0, 0.2, 0.4], xlim=(-80, 20), ylim= (0, 0.4))
-        plt.title("A2 Left shift")
+        set_properties(xlabel="v (mV)", ylabel="h", xtick=[-60, 20], ytick=[0, 0.2, 0.4], xlim=(-80, 20), ylim=(0, 0.4))
+
+save_fig('4A')
