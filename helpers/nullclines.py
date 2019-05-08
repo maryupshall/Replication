@@ -9,16 +9,16 @@ def nullcline_h(v):
     return h_inf(v)
 
 
-def nullcline_v(v, I_app, hs=1):
+def nullcline_v(v, i_app, hs=1):
     nv = np.zeros((len(v),))
-    parameters = default_parameters(I_app=I_app)
+    parameters = default_parameters(i_app=i_app)
     for i in range(len(v)):
-        h_solve = newton(lambda h: nc(h, v[i], parameters, hs=hs), 0)  # calculate h value where dv=0
+        h_solve = newton(lambda h: __nullcline_v_implicit__(h, v[i], parameters, hs=hs), 0)
         nv[i] = h_solve
 
     return nv
 
 
-def nc(h, v, parameters, hs=1):  # maybe take from diffeq d=5
-    I, gNa, gK, gl, ENa, Ek, El, *_ = parameters
-    return I - gl * (v - El) - gK * (f(h) ** 3) * (v - Ek) - gNa * h * hs * (m_inf(v) ** 3) * (v - ENa)
+def __nullcline_v_implicit__(h, v, parameters, hs=1):
+    i_app, g_na, g_k, g_l, e_na, e_k, e_l, *_ = parameters
+    return i_app - g_l * (v - e_l) - g_k * (f(h) ** 3) * (v - e_k) - g_na * h * hs * (m_inf(v) ** 3) * (v - e_na)

@@ -13,7 +13,7 @@ vmin_all = np.zeros(len(I_list))
 
 for ix, ode_function in enumerate(ode_functions):
     for i, I in enumerate(I_list):
-        parameters=default_parameters(I_app=I)
+        parameters=default_parameters(i_app=I)
         state0= [-60, 0] + ix*[0] # v_list,h, hs
 
         state = odeint(ode_function, state0, t, args=(parameters,))

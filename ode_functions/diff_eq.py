@@ -2,27 +2,27 @@ from ode_functions.gating import *
 
 
 def ode_2d(state, t, parameters):
-    I, gNa, gK, gl, ENa, Ek, El = parameters
+    i_app, g_na, g_k, g_l, e_na, e_k, e_l = parameters
     v, h = state
     n = f(h)
 
-    dv = I - gl * (v - El) - gNa * (m_inf(v) ** 3) * h * (v - ENa) - gK * ((n ** 3) * (v - Ek))  # 2D model
-    dh = - (h - (h_inf(v))) / (Th(v))
+    dv = i_app - g_l * (v - e_l) - g_na * (m_inf(v) ** 3) * h * (v - e_na) - g_k * ((n ** 3) * (v - e_k))
+    dh = - (h - (h_inf(v))) / (tau_h(v))
 
     return [dv, dh]
 
 
 def ode_3d(state, t, parameters, synapse=None, scale=1):
-    I, gNa, gK, gl, ENa, Ek, El, *p_synapse = parameters
+    i_app, g_na, g_k, g_l, e_na, e_k, e_l, *p_synapse = parameters
     v, h, hs = state
     n = f(h)
 
     i_syn = 0 if synapse is None else synapse(v, p_synapse)
 
-    dv = I - (gl * (v - El)) - (gNa * (m_inf(v) ** 3) * h * hs * (v - ENa)) - (
-                gK * (n ** 3) * (v - Ek)) - i_syn  # 3D model
-    dh = - (h - (h_inf(v))) / (Th(v))
-    dhs = - (hs - (hs_inf(v))) / (Ths(v)) * scale
+    dv = i_app - (g_l * (v - e_l)) - (g_na * (m_inf(v) ** 3) * h * hs * (v - e_na)) - (
+            g_k * (n ** 3) * (v - e_k)) - i_syn
+    dh = - (h - (h_inf(v))) / (tau_h(v))
+    dhs = - (hs - (hs_inf(v))) / (tah_hs(v)) * scale
 
     return [dv, dh, dhs]
 
@@ -34,14 +34,14 @@ def synaptic_3d(state, t, parameters):
 
 
 def ode_5d(state, t, parameters):
-    I, gNa, gK, gl, ENa, Ek, El = parameters
+    i_app, g_na, g_k, g_l, e_na, e_k, e_l = parameters
     v, h, hs, m, n = state
 
-    dv = I - gl * (v - El) - gNa * (m ** 3) * h * hs * (v - ENa) - gK * ((n) ** 3) * (v - Ek)  # 3D model
-    dh = - (h - (h_inf(v))) / (Th(v))
-    dhs = - (hs - (hs_inf(v))) / (Ths(v))
-    dm = - (m - (m_inf(v))) / (Tm(v))
-    dn = - (n - (n_inf(v))) / (Tn(v))
+    dv = i_app - g_l * (v - e_l) - g_na * (m ** 3) * h * hs * (v - e_na) - g_k * (n ** 3) * (v - e_k)  # 3D model
+    dh = - (h - (h_inf(v))) / (tau_h(v))
+    dhs = - (hs - (hs_inf(v))) / (tah_hs(v))
+    dm = - (m - (m_inf(v))) / (tau_m(v))
+    dn = - (n - (n_inf(v))) / (tau_n(v))
 
     return [dv, dh, dhs, dm, dn]
 
@@ -59,13 +59,3 @@ def __clamp__(state, t, p, func, ix):
     ddt = func(state, t, p)
     ddt[ix] = 0
     return ddt
-
-
-def I_NMDA(v, p, Mg=1.4):
-    gNmda, Enmda = p
-    return (gNmda * (v - Enmda)) / (1 + (Mg / 3.57) * np.exp(0.062 * v))
-
-
-def I_AMPA(v, p):
-    gAmpa, EAmpa = p
-    return gAmpa * (v - EAmpa)
