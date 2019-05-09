@@ -3,8 +3,7 @@ from scipy.integrate import odeint
 from helpers.plotting import *
 from ode_functions.current import sodium_current
 from ode_functions.defaults import default_parameters
-from ode_functions.diff_eq import ode_3d, voltage_clamp
-from ode_functions.diff_eq import ode_5d
+from ode_functions.diff_eq import ode_2d, ode_3d, ode_5d, voltage_clamp
 from ode_functions.gating import *
 
 
@@ -16,14 +15,30 @@ def run():
 
 
 def __figure1a__():
-    parameters = default_parameters(g_na=0.00000592 / 2)  # need to divide given value by 2 to get correct graph
-    parameters.append(ode_3d)
+    parameters = default_parameters(g_na=0.00000592 / 1.5)  # need to divide given value by 1.5 to get correct graph
+    parameters.append(None)
+    time = np.arange(0, 100, 0.1)
+    voltage = np.arange(-100, 60, 0.5)
 
-    v = np.arange(-100, 60, 0.5)
-    current = list(map(lambda x: 1e6 * np.max(sodium_current(x, m_inf(x), parameters)), v))
+    ode_functions = [ode_2d, ode_3d]
 
+    current = np.zeros((len(voltage), 2))
     init_figure(size=(5, 3))
-    plt.plot(v, current, 'k')
+    for ix, func in enumerate(ode_functions):
+        parameters[-1] = func
+        for iy, v in enumerate(voltage):
+            ic = [-70, 0.815]
+            state = odeint(voltage_clamp, ic + ix * [1], time, args=(parameters,))
+            if ix == 0:
+                hs = 1
+            else:
+                hs = state[:, 2]
+
+            current[iy, ix] = 1e6 * np.min((sodium_current(v, m_inf(v), parameters, h=state[:, 1], hs=hs)))
+
+    plt.plot(voltage, current[:, 1], color='grey')
+    plt.plot(voltage, current[:, 0], 'k--')
+
     set_properties(x_label="V (mV)", y_label="peak I$_{Na}$", x_tick=[-80, -40, 0, 40], y_tick=[-160, 0])
     save_fig('1A')
 
