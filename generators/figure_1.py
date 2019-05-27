@@ -8,10 +8,23 @@ from ode_functions.gating import *
 
 
 def run():
+    init_figure(size=(15, 9))
+    plt.subplot2grid((2, 6), (0, 0), colspan=2, rowspan=1)
     __figure1a__()
+
+    plt.subplot2grid((2, 6), (0, 2), colspan=2, rowspan=1)
     __figure1b__()
+
+    plt.subplot2grid((2, 6), (0, 4), colspan=2, rowspan=1)
     __figure1c__()
-    __figure1d__()
+
+    plt.subplot2grid((2, 6), (1, 0), colspan=3, rowspan=1)
+    __figure1d__(ix=0)
+
+    plt.subplot2grid((2, 6), (1, 3), colspan=3, rowspan=1)
+    __figure1d__(ix=1)
+
+    save_fig("1")
 
 
 def __figure1a__():
@@ -23,7 +36,6 @@ def __figure1a__():
     ode_functions = [ode_2d, ode_3d]
 
     current = np.zeros((len(voltage), 2))
-    init_figure(size=(5, 3))
     for ix, func in enumerate(ode_functions):
         parameters[-1] = func
         for iy, v in enumerate(voltage):
@@ -40,7 +52,6 @@ def __figure1a__():
     plt.plot(voltage, current[:, 0], 'k--')
 
     set_properties(x_label="V (mV)", y_label="peak I$_{Na}$", x_tick=[-80, -40, 0, 40], y_tick=[-160, 0])
-    save_fig('1A')
 
 
 def __figure1b__():
@@ -78,11 +89,9 @@ def __figure1b__():
         else:
             ic = [-70, h[-1], hs[-1]]
 
-    init_figure(size=(5, 3))
     plt.plot(all_time, 1e6 * clamp_current, 'k')
     set_properties(x_label="time (ms)", y_label="I$_{Na}$ (pA)", x_tick=[0, 200, 400], y_tick=[-200, 0],
                    x_limits=[-50, 600])
-    save_fig("1B")
 
 
 def __figure1c__():
@@ -95,27 +104,21 @@ def __figure1c__():
     h = state[200000:, 1]
     n = state[200000:, 4]
 
-    init_figure(size=(5, 3))
     plt.plot(h, n, c="grey")
     plt.plot(h, list(map(f, h)), "k")
     set_properties(x_label="h", y_label="n", x_tick=[0, 0.2, 0.4, 0.6], y_tick=np.arange(0, 1, 0.2))
     plt.legend(["n", "n=f(h)"])
-    save_fig("1C")
 
 
-def __figure1d__():
+def __figure1d__(ix=0):
     ode_functions = [ode_3d, ode_5d]
     parameters = default_parameters()
     t = np.arange(0, 4300, 0.01)
 
-    init_figure(size=(5, 3))
-    for ix, ode_function in enumerate(ode_functions):
-        ic = [-55, 0, 0] + ix * [0, 0]
-        state = odeint(ode_function, ic, t, args=(parameters,), atol=1e-3)
+    ode_function = ode_functions[ix]
 
-        plt.subplot(2, 1, ix + 1)
-        plt.plot(t, state[:, 0], "k")
+    ic = [-55, 0, 0] + ix * [0, 0]
+    state = odeint(ode_function, ic, t, args=(parameters,), atol=1e-3)
 
-        set_properties(y_label="v (mV)", y_tick=[-80, -40, 0])
-
-    save_fig('1D')
+    plt.plot(t, state[:, 0], "k")
+    set_properties(y_label="v (mV)", y_tick=[-80, -40, 0])

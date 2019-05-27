@@ -1,4 +1,6 @@
+import PyDSTool
 from scipy.integrate import odeint
+from sympy import *
 
 from helpers.nullclines import nullcline_v, nullcline_h
 from helpers.plotting import *
@@ -9,13 +11,27 @@ from ode_functions.gating import *
 
 
 def run():
-    __figure3a__()
-    __figure3b__()
+    init_figure(size=(10, 15))
+    plt.subplot2grid((5, 4), (0, 0), colspan=4, rowspan=1)
+    __figure3a__(fig_num=0)
+
+    plt.subplot2grid((5, 4), (1, 0), colspan=4, rowspan=1)
+    __figure3a__(fig_num=1)
+
+    for ix in np.arange(4):
+        plt.subplot2grid((5, 4), (2, ix), colspan=1, rowspan=1)
+        __figure3b__(ix)
+
+    plt.subplot2grid((5, 4), (3, 0), colspan=4, rowspan=1)
     __figure3c__()
+
+    plt.subplot2grid((5, 4), (4, 0), colspan=4, rowspan=1)
     __figure3d__()
 
+    save_fig("3")
 
-def __figure3a__():
+
+def __figure3a__(fig_num=0):
     ic = [-55, 0, 0]
     t_solved = np.array([])
     solution = np.array([0, 0, 0])
@@ -37,79 +53,96 @@ def __figure3a__():
     solution = solution[1:, :]  # TODO: hack for starting shape
 
     stimulus = np.zeros(t_solved.shape)
-    stimulus[t_solved > times[0]] = currents[1]
+    stimulus[t_solved > times[0]] = 1
 
-    init_figure(size=(5, 3))
+    if fig_num == 0:
+        plt.plot(t_solved, solution[:, 0], 'k')
+        plt.plot(t_solved, 10 * stimulus - 80, 'grey')
+        set_properties(y_label='v (mV)', y_tick=[-60, -40, -20, 0, 20])
 
-    plt.subplot(3, 1, 1)
-    plt.plot(t_solved, solution[:, 0], 'k')
-    set_properties(y_label='v (mV)', y_tick=[-60, -40, -20, 0, 20])
-
-    plt.subplot(3, 1, 2)
-    plt.plot(t_solved, (solution[:, 1]) * (solution[:, 2]), 'k')
-    plt.plot(t_solved, solution[:, 2], "k--")
-    set_properties(y_label='h$_{total}$, h$_s$', y_tick=[0, 0.2, 0.4, 0.6, 0.8])
-
-    plt.subplot(3, 1, 3)
-    plt.plot(t_solved, stimulus, 'k')
-    set_properties(x_label='Time (ms)', y_label='I$_{app}$', y_tick=[0, 0.16], x_tick=np.arange(0, 8000, 2000))
-
-    save_fig('3A')
+    else:
+        plt.plot(t_solved, (solution[:, 1]) * (solution[:, 2]), 'k')
+        plt.plot(t_solved, solution[:, 2], "k--")
+        set_properties(y_label='h$_{total}$, h$_s$', y_tick=[0, 0.2, 0.4, 0.6, 0.8])
 
 
-def __figure3b__():
+def __figure3b__(ix=0):
     i_app_list = [0, 0.16, 0.16, 0.16]
     hs_list = [0.6, 0.6, 0.2, 0.05]
 
     v = np.arange(-90, 50)
     nh = nullcline_h(v)
 
-    init_figure(size=(8, 2))
-    for ix, (I, hs) in enumerate(zip(i_app_list, hs_list)):
-        plt.subplot(1, 4, ix + 1)
-        plt.plot(v, nh, 'k')
-        nv = nullcline_v(v, I, hs=hs)
+    I = i_app_list[ix]
+    hs = hs_list[ix]
+    plt.plot(v, nh, 'k')
+    nv = nullcline_v(v, I, hs=hs)
 
-        plt.plot(v, nv, '--', color='grey')
-        style = 'k' if ix == 3 else 'none'
-        cross_index = np.argmin(np.abs(nv - nh))
-        plt.scatter(v[cross_index], nv[cross_index], edgecolors='k', facecolors=style)
+    plt.plot(v, nv, '--', color='grey')
+    style = 'k' if ix == 3 else 'none'
+    cross_index = np.argmin(np.abs(nv - nh))
+    plt.scatter(v[cross_index], nv[cross_index], edgecolors='k', facecolors=style)
 
-        set_properties(x_label="v (mV)", y_label="h", x_tick=[-40, 40], y_tick=[0, 0.2, 0.4, 0.6, 0.8],
-                       x_limits=(-80, 50),
-                       y_limits=(0, 0.6))
-
-    save_fig('3B')
+    set_properties(x_label="v (mV)", y_label="h", x_tick=[-40, 40], y_tick=[0, 0.2, 0.4, 0.6, 0.8],
+                   x_limits=(-80, 50),
+                   y_limits=(0, 0.6))
 
 
 def __figure3c__():
+    __figure3c_continuation__()
     parameters = default_parameters(i_app=0.16)
-    t = np.arange(0, 10000, 1)
+    t = np.arange(0, 10000, 0.1)
     ic = [-60, 0, 1]
 
     trajectory = odeint(ode_3d, ic, t, args=(parameters,))  # pre-stimulus solution
-
-    hs = np.arange(0, 1, 0.05)
-
-    v_max = np.zeros(len(hs))
-    v_min = np.zeros(len(hs))
-
-    for i in range(len(hs)):
-        ic = [-55, 0, hs[i]]
-        parameters = default_parameters(i_app=0.16)
-
-        state = odeint(hs_clamp, ic, t, args=(parameters,))
-        v = state[7500:, 0]
-        v_max[i] = np.max(v)
-        v_min[i] = np.min(v)
-
-    init_figure(size=(5, 3))
-    plt.plot(hs, v_max, "--", c="k")
-    plt.plot(hs, v_min, "--", c="k")
     plt.plot(trajectory[:, 2], trajectory[:, 0], c='grey')
 
     set_properties(x_label="h$_{s}$", y_label="v (mV)", x_tick=[0, 0.2, 0.4, 0.6, 0.8, 1], y_tick=[-80, -40, 0, 40])
-    save_fig("3C")
+
+
+def __figure3c_continuation__():
+    parameters = default_parameters(i_app=0.16)
+    v, h, h_s = symbols('v h h_s')
+    dydt = hs_clamp([v, h, h_s], 0, parameters)
+
+    DSargs = PyDSTool.args(name='bifn')
+    DSargs.pars = {'h_s': 0}
+    DSargs.varspecs = {'v': PyDSTool.convertPowers(str(dydt[0])),
+                       'h': PyDSTool.convertPowers(str(dydt[1]))}
+    DSargs.ics = {'v': 0, 'h': 0}
+
+    ode = PyDSTool.Generator.Vode_ODEsystem(DSargs)
+    ode.set(pars={'h_s': 0})
+    ode.set(ics={'v': -49, "h": 0.4})
+    PyCont = PyDSTool.ContClass(ode)
+
+    PCargs = PyDSTool.args(name='EQ1', type='EP-C')
+    PCargs.freepars = ['h_s']
+    PCargs.MaxNumPoints = 350
+    PCargs.MaxStepSize = 0.1
+    PCargs.MinStepSize = 1e-5
+    PCargs.StepSize = 1e-2
+    PCargs.LocBifPoints = 'all'
+    PCargs.SaveEigen = True
+    PyCont.newCurve(PCargs)
+    PyCont['EQ1'].backward()
+
+    PyCont['EQ1'].display(['h_s', 'v'], stability=True, figure=1)
+
+    PCargs.name = 'LC1'
+    PCargs.type = 'LC-C'
+    PCargs.initpoint = 'EQ1:H2'
+    PCargs.freepars = ['h_s']
+    PCargs.MaxNumPoints = 500
+    PCargs.MaxStepSize = 0.1
+    PCargs.LocBifPoints = 'all'
+    PCargs.SaveEigen = True
+    PyCont.newCurve(PCargs)
+    PyCont['LC1'].backward()
+    PyCont['LC1'].display(('h_s', 'v_min'), stability=True, figure=1)
+    PyCont['LC1'].display(('h_s', 'v_max'), stability=True, figure=1)
+
+    plt.xlim([0, 1])
 
 
 def __figure3d__():
@@ -133,16 +166,8 @@ def __figure3d__():
     solution = solution[1:, :]  # TODO: hack for starting shape
 
     stimulus = np.zeros(t_solved.shape)
-    stimulus[t_solved > times[0]] = currents[1]
+    stimulus[t_solved > times[0]] = 1
 
-    init_figure(size=(5, 3))
-
-    plt.subplot(2, 1, 1)
     plt.plot(t_solved, solution[:, 0], 'k')
+    plt.plot(t_solved, 10 * stimulus - 80, 'grey')
     set_properties(y_label='$V_m$ (mV)', y_tick=[-40, 0], y_limits=(-80, 20))
-
-    plt.subplot(2, 1, 2)
-    plt.plot(t_solved, stimulus, 'k')
-    set_properties()
-
-    save_fig('3D')

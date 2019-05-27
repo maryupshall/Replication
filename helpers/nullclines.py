@@ -20,5 +20,6 @@ def nullcline_v(v, i_app, hs=1):
 
 
 def __nullcline_v_implicit__(h, v, parameters, hs=1):
-    i_app, g_na, g_k, g_l, e_na, e_k, e_l, *_ = parameters
+    p = parameters
+    i_app, g_na, g_k, g_l, e_na, e_k, e_l, _ = p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7:]
     return i_app - g_l * (v - e_l) - g_k * (f(h) ** 3) * (v - e_k) - g_na * h * hs * (m_inf(v) ** 3) * (v - e_na)
