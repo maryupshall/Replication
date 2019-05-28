@@ -1,6 +1,3 @@
-import os
-import shutil
-
 import PyDSTool
 from scipy.integrate import odeint
 from sympy import *
@@ -73,7 +70,7 @@ def __figure4b1_continuation__():
     DSargs_1 = PyDSTool.args(name='bifn_1')
     DSargs_1.pars = {'i_app': 0}
     DSargs_1.varspecs = {'v': PyDSTool.convertPowers(str(dydt[0])),
-                       'h': PyDSTool.convertPowers(str(dydt[1]))}
+                         'h': PyDSTool.convertPowers(str(dydt[1]))}
     DSargs_1.ics = {'v': 0, 'h': 0}
 
     ode_1 = PyDSTool.Generator.Vode_ODEsystem(DSargs_1)
@@ -121,8 +118,8 @@ def __figure4b2_continuation__():
     DSargs_2 = PyDSTool.args(name='bifn_2')
     DSargs_2.pars = {'i_app': 0}
     DSargs_2.varspecs = {'v': PyDSTool.convertPowers(str(dydt[0])),
-                       'h': PyDSTool.convertPowers(str(dydt[1])),
-                       'h_s': PyDSTool.convertPowers(str(dydt[2]))}
+                         'h': PyDSTool.convertPowers(str(dydt[1])),
+                         'h_s': PyDSTool.convertPowers(str(dydt[2]))}
     DSargs_2.ics = {'v': 0, 'h': 0, 'h_s': 0}
 
     ode_2 = PyDSTool.Generator.Vode_ODEsystem(DSargs_2)
