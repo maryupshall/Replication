@@ -27,7 +27,7 @@ def __figure6__():
             t_solved = np.array([])
             solution = np.array([0, 0, 0])
 
-            plt.subplot(4, 2, 2 * ix + iz + 1)
+            plt.subplot(3, 2, 2 * ix + iz + 1)
             for iy, control_parameter in enumerate(parameter_set):
                 t = np.arange(t0, times[iy])
                 t_solved = np.concatenate((t_solved, t))
@@ -52,12 +52,10 @@ def __figure6__():
             plt.plot(t_solved, solution[:, 0], 'k')
             set_properties(y_label="V (mV)", y_tick=[-80, -40, 0])
 
-            if ix == 0:
+            if (2 * ix + iz + 1)==5 or (2 * ix + iz + 1)==6:
                 stimulus = np.zeros(t_solved.shape)
                 stimulus[(t_solved > times[0]) & (t_solved < times[1])] = 1
 
-                plt.subplot(4, 2, 7 + iz)
-                plt.plot(t_solved, stimulus, 'k')
-                set_properties()
+                plt.plot(t_solved, 10*stimulus-80, 'grey')
 
     save_fig('6')
