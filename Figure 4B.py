@@ -2,7 +2,7 @@ from scipy.integrate import odeint
 from ode_functions.gating import *
 from ode_functions.diff_eq import ode_2d, ode_3d
 from ode_functions.defaults import default_parameters
-from plotting import *
+from helpers.plotting import *
 
 ode_functions = [ode_2d, ode_3d]
 I_list = np.arange(-5, 5, 0.01)  #uA/cm^2
@@ -13,7 +13,7 @@ vmin_all = np.zeros(len(I_list))
 
 for ix, ode_function in enumerate(ode_functions):
     for i, I in enumerate(I_list):
-        parameters=default_parameters(I_app=I)
+        parameters=default_parameters(i_app=I)
         state0= [-60, 0] + ix*[0] # v_list,h, hs
 
         state = odeint(ode_function, state0, t, args=(parameters,))

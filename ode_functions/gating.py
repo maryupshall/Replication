@@ -1,58 +1,53 @@
 import numpy as np
 
 
-# Boltzmann functions
-def m_inf(v):
-    mhalf = -30.0907  # mV
-    mslope = 9.7264  # mV
-    return 1 / (1 + np.exp(-(v - mhalf) / mslope))
+def m_inf(v, exp=np.exp):
+    m_half = -30.0907
+    m_slope = 9.7264
+    return 1 / (1 + exp(-(v - m_half) / m_slope))
 
 
-def h_inf(v):
-    hhalf = -54.0289  # mV
-    hslope = -10.7665  # mV
-    return 1 / (1 + np.exp(-(v - hhalf) / hslope))
+def h_inf(v, exp=np.exp):
+    h_half = -54.0289
+    h_slope = -10.7665
+    return 1 / (1 + exp(-(v - h_half) / h_slope))
 
 
-def hs_inf(v):
-    hshalf = -54.8  # mV
-    hsslope = -1.57  # mV
-    return 1 / (1 + np.exp(-(v - hshalf) / hsslope))
+def hs_inf(v, exp=np.exp):
+    hs_half = -54.8
+    hs_slope = -1.57
+    return 1 / (1 + exp(-(v - hs_half) / hs_slope))
 
 
-def n_inf(v):
-    nhalf = -25  # mV
-    nslope = 12  # mV
-    return 1 / (1 + np.exp(-(v - nhalf) / nslope))
+def n_inf(v, exp=np.exp):
+    n_half = -25
+    n_slope = 12
+    return 1 / (1 + exp(-(v - n_half) / n_slope))
 
 
-# Time constants (ms)
+def tau_h(v, exp=np.exp):
+    a = 0.00050754 * exp(-0.063213 * v)
+    b = 9.7529 * exp(0.13442 * v)
 
-def Th(v):
-    a = 0.00050754 * np.exp(-0.063213 * v)
-    b = 9.7529 * np.exp(0.13442 * v)
-
-    return 0.4 + 1 / (a + b)  # ms
+    return 0.4 + 1 / (a + b)
 
 
-def Ths(v):
-    return 20 + 160 / (1 + np.exp((v + 47.2) / 1))  # ms
+def tah_hs(v, exp=np.exp):
+    return 20 + 160 / (1 + exp((v + 47.2) / 1))
 
 
-def Tm(v):
-    a = -(15.6504 + (0.4043 * v)) / (np.exp(-19.565 - (0.50542 * v)) - 1)
-    b = 3.0212 * np.exp(-0.0074630 * v)
+def tau_m(v, exp=np.exp):
+    a = -(15.6504 + (0.4043 * v)) / (exp(-19.565 - (0.50542 * v)) - 1)
+    b = 3.0212 * exp(-0.0074630 * v)
 
     return 0.01 + 1 / (a + b)
 
 
-def Tn(v):
-    # return 1 + 19 * np.exp((-(np.log(1 + 0.05 * (v_list + 40)) / 0.05) ** 2) / 300)
-    return 1 + 19 * np.exp((-(np.log(1 + 0.05 * (v + 60)) / 0.05) ** 2) / 300)
+def tau_n(v, exp=np.exp):
+    return 1 + 19 * exp((-(np.log(1 + 0.05 * (v + 60)) / 0.05) ** 2) / 300)
 
 
-# variable n as a function of h
-def f(h): # TODO:confirm
+def f(h):
     a0 = 0.8158
     a1 = -3.8768
     a2 = 6.8838
@@ -60,7 +55,10 @@ def f(h): # TODO:confirm
 
     fh = np.asarray(a0 + a1 * h + a2 * (h ** 2) + a3 * (h ** 3))
 
-    fh[fh<0] = 0
-    fh[fh>1]=1
+    try:
+        fh[fh < 0] = 0
+        fh[fh > 1] = 1
+    except:
+        pass
 
     return fh
