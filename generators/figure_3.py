@@ -105,42 +105,42 @@ def __figure3c_continuation__():
     v, h, h_s = symbols('v h h_s')
     dydt = hs_clamp([v, h, h_s], 0, parameters)
 
-    DSargs = PyDSTool.args(name='bifn')
-    DSargs.pars = {'h_s': 0}
-    DSargs.varspecs = {'v': PyDSTool.convertPowers(str(dydt[0])),
+    DSargs_3 = PyDSTool.args(name='bifn_3')
+    DSargs_3.pars = {'h_s': 0}
+    DSargs_3.varspecs = {'v': PyDSTool.convertPowers(str(dydt[0])),
                        'h': PyDSTool.convertPowers(str(dydt[1]))}
-    DSargs.ics = {'v': 0, 'h': 0}
+    DSargs_3.ics = {'v': 0, 'h': 0}
 
-    ode = PyDSTool.Generator.Vode_ODEsystem(DSargs)
-    ode.set(pars={'h_s': 0})
-    ode.set(ics={'v': -49, "h": 0.4})
-    PyCont = PyDSTool.ContClass(ode)
+    ode_3 = PyDSTool.Generator.Vode_ODEsystem(DSargs_3)
+    ode_3.set(pars={'h_s': 0})
+    ode_3.set(ics={'v': -49, "h": 0.4})
+    PyCont_3 = PyDSTool.ContClass(ode_3)
 
-    PCargs = PyDSTool.args(name='EQ1', type='EP-C')
-    PCargs.freepars = ['h_s']
-    PCargs.MaxNumPoints = 350
-    PCargs.MaxStepSize = 0.1
-    PCargs.MinStepSize = 1e-5
-    PCargs.StepSize = 1e-2
-    PCargs.LocBifPoints = 'all'
-    PCargs.SaveEigen = True
-    PyCont.newCurve(PCargs)
-    PyCont['EQ1'].backward()
+    PCargs_3 = PyDSTool.args(name='EQ1_3', type='EP-C')
+    PCargs_3.freepars = ['h_s']
+    PCargs_3.MaxNumPoints = 350
+    PCargs_3.MaxStepSize = 0.1
+    PCargs_3.MinStepSize = 1e-5
+    PCargs_3.StepSize = 1e-2
+    PCargs_3.LocBifPoints = 'all'
+    PCargs_3.SaveEigen = True
+    PyCont_3.newCurve(PCargs_3)
+    PyCont_3['EQ1_3'].backward()
 
-    PyCont['EQ1'].display(['h_s', 'v'], stability=True, figure=1)
+    PyCont_3['EQ1_3'].display(['h_s', 'v'], stability=True, figure=1)
 
-    PCargs.name = 'LC1'
-    PCargs.type = 'LC-C'
-    PCargs.initpoint = 'EQ1:H2'
-    PCargs.freepars = ['h_s']
-    PCargs.MaxNumPoints = 500
-    PCargs.MaxStepSize = 0.1
-    PCargs.LocBifPoints = 'all'
-    PCargs.SaveEigen = True
-    PyCont.newCurve(PCargs)
-    PyCont['LC1'].backward()
-    PyCont['LC1'].display(('h_s', 'v_min'), stability=True, figure=1)
-    PyCont['LC1'].display(('h_s', 'v_max'), stability=True, figure=1)
+    PCargs_3.name = 'LC1_3'
+    PCargs_3.type = 'LC-C'
+    PCargs_3.initpoint = 'EQ1_3:H2'
+    PCargs_3.freepars = ['h_s']
+    PCargs_3.MaxNumPoints = 500
+    PCargs_3.MaxStepSize = 0.1
+    PCargs_3.LocBifPoints = 'all'
+    PCargs_3.SaveEigen = True
+    PyCont_3.newCurve(PCargs_3)
+    PyCont_3['LC1_3'].backward()
+    PyCont_3['LC1_3'].display(('h_s', 'v_min'), stability=True, figure=1)
+    PyCont_3['LC1_3'].display(('h_s', 'v_max'), stability=True, figure=1)
 
     plt.xlim([0, 1])
 

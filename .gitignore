@@ -409,4 +409,5 @@ venv.bak/
 
 auto_temp/
 radau5_temp/
-auto_bifn_vf.py
+auto*.py
+_auto*.so

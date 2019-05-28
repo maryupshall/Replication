@@ -1,12 +1,16 @@
-from scipy.integrate import odeint
+import os
+import shutil
+
 import PyDSTool
+from scipy.integrate import odeint
+from sympy import *
+
 from helpers.nullclines import nullcline_h, nullcline_v
 from helpers.plotting import *
 from ode_functions.current import sodium_current_hack
 from ode_functions.defaults import default_parameters
 from ode_functions.diff_eq import ode_2d, ode_3d, voltage_clamp
 from ode_functions.gating import *
-from sympy import *
 
 
 def run():
@@ -16,13 +20,17 @@ def run():
     plt.subplot2grid((4, 2), (0, 1), colspan=1, rowspan=1)
     __figure4a__(ix=1)
 
-    # plt.subplot2grid((5, 2), (0, 0), colspan=1, rowspan=1)
-    # __figure4b__()
+    plt.subplot2grid((4, 2), (1, 0), colspan=2, rowspan=1)
+    __figure4b__(ix=0)
+    plt.subplot2grid((4, 2), (2, 0), colspan=2, rowspan=1)
+    __figure4b__(ix=1)
 
     plt.subplot2grid((4, 2), (3, 0), colspan=1, rowspan=1)
     __figure4c__(ix=0)
     plt.subplot2grid((4, 2), (3, 1), colspan=1, rowspan=1)
     __figure4c__(ix=1)
+
+    save_fig('4')
 
 
 def __figure4a__(ix=0):
@@ -49,8 +57,8 @@ def __figure4a__(ix=0):
                        y_limits=(0, 0.4))
 
 
-def __figure4b__(version=0):
-    if version == 0:
+def __figure4b__(ix=0):
+    if ix == 0:
         __figure4b1_continuation__()
     else:
         __figure4b2_continuation__()
@@ -62,50 +70,95 @@ def __figure4b1_continuation__():
     parameters[0] = i_app
     dydt = ode_2d([v, h], 0, parameters, exp=exp)
 
-    DSargs = PyDSTool.args(name='bifn')
-    DSargs.pars = {'i_app': 0}
-    DSargs.varspecs = {'v': PyDSTool.convertPowers(str(dydt[0])),
+    DSargs_1 = PyDSTool.args(name='bifn_1')
+    DSargs_1.pars = {'i_app': 0}
+    DSargs_1.varspecs = {'v': PyDSTool.convertPowers(str(dydt[0])),
                        'h': PyDSTool.convertPowers(str(dydt[1]))}
-    DSargs.ics = {'v': 0, 'h': 0}
+    DSargs_1.ics = {'v': 0, 'h': 0}
 
-    ode = PyDSTool.Generator.Vode_ODEsystem(DSargs)
-    ode.set(pars={'i_app': 0})
-    ode.set(ics={'v': -49, "h": 0.4})
-    PyCont = PyDSTool.ContClass(ode)
+    ode_1 = PyDSTool.Generator.Vode_ODEsystem(DSargs_1)
+    ode_1.set(pars={'i_app': 0})
+    ode_1.set(ics={'v': -49, "h": 0.4})
+    PyCont_1 = PyDSTool.ContClass(ode_1)
 
-    PCargs = PyDSTool.args(name='EQ1', type='EP-C')
-    PCargs.freepars = ['i_app']
-    PCargs.MaxNumPoints = 500
-    PCargs.MaxStepSize = 0.1
-    PCargs.MinStepSize = 1e-5
-    PCargs.StepSize = 1e-2
-    PCargs.LocBifPoints = 'all'
-    PCargs.SaveEigen = True
-    PyCont.newCurve(PCargs)
-    PyCont['EQ1'].backward()
-    PyCont['EQ1'].forward()
-    PyCont['EQ1'].backward()
+    PCargs_1 = PyDSTool.args(name='EQ1_1', type='EP-C')
+    PCargs_1.freepars = ['i_app']
+    PCargs_1.MaxNumPoints = 500
+    PCargs_1.MaxStepSize = 0.05
+    PCargs_1.MinStepSize = 1e-5
+    PCargs_1.StepSize = 1e-2
+    PCargs_1.LocBifPoints = 'all'
+    PCargs_1.SaveEigen = True
+    PyCont_1.newCurve(PCargs_1)
+    PyCont_1['EQ1_1'].backward()
+    PyCont_1['EQ1_1'].forward()
+    PyCont_1['EQ1_1'].backward()
 
-    PyCont['EQ1'].display(['i_app', 'v'], stability=True, figure=1)
+    PyCont_1['EQ1_1'].display(['i_app', 'v'], stability=True, figure=1)
 
-    PCargs.name = 'LC1'
-    PCargs.type = 'LC-C'
-    PCargs.initpoint = 'EQ1:H1'
-    PCargs.freepars = ['i_app']
-    PCargs.MaxNumPoints = 500
-    PCargs.MaxStepSize = 0.1
-    PCargs.LocBifPoints = 'all'
-    PCargs.SaveEigen = True
-    PyCont.newCurve(PCargs)
-    PyCont['LC1'].backward()
-    PyCont['LC1'].display(('h_s', 'v_min'), stability=True, figure=1)
-    PyCont['LC1'].display(('h_s', 'v_max'), stability=True, figure=1)
+    PCargs_1.name = 'LC1_1'
+    PCargs_1.type = 'LC-C'
+    PCargs_1.initpoint = 'EQ1_1:H1'
+    PCargs_1.freepars = ['i_app']
+    PCargs_1.MaxNumPoints = 1500
+    PCargs_1.MaxStepSize = 0.1
+    PCargs_1.LocBifPoints = 'all'
+    PCargs_1.SaveEigen = True
+    PyCont_1.newCurve(PCargs_1)
+    PyCont_1['LC1_1'].backward()
+    PyCont_1['LC1_1'].display(('i_app', 'v_min'), stability=True, figure=1)
+    PyCont_1['LC1_1'].display(('i_app', 'v_max'), stability=True, figure=1)
 
     plt.xlim([-5, 5])
 
 
 def __figure4b2_continuation__():
-    pass
+    parameters = default_parameters(i_app=-0.1)
+    v, h, h_s, i_app = symbols('v h h_s i_app')
+    parameters[0] = i_app
+    dydt = ode_3d([v, h, h_s], 0, parameters, exp=exp)
+
+    DSargs_2 = PyDSTool.args(name='bifn_2')
+    DSargs_2.pars = {'i_app': 0}
+    DSargs_2.varspecs = {'v': PyDSTool.convertPowers(str(dydt[0])),
+                       'h': PyDSTool.convertPowers(str(dydt[1])),
+                       'h_s': PyDSTool.convertPowers(str(dydt[2]))}
+    DSargs_2.ics = {'v': 0, 'h': 0, 'h_s': 0}
+
+    ode_2 = PyDSTool.Generator.Vode_ODEsystem(DSargs_2)
+    ode_2.set(pars={'i_app': -0.1})
+    ode_2.set(ics={'v': -67, "h": 0.77, "h_s": 1})
+    PyCont_2 = PyDSTool.ContClass(ode_2)
+
+    PCargs_2 = PyDSTool.args(name='EQ1_2', type='EP-C')
+    PCargs_2.freepars = ['i_app']
+    PCargs_2.MaxNumPoints = 300
+    PCargs_2.MaxStepSize = 0.1
+    PCargs_2.MinStepSize = 1e-5
+    PCargs_2.StepSize = 1e-2
+    PCargs_2.LocBifPoints = 'all'
+    PCargs_2.SaveEigen = True
+    PyCont_2.newCurve(PCargs_2)
+    PyCont_2['EQ1_2'].backward()
+
+    PyCont_2['EQ1_2'].display(['i_app', 'v'], stability=True, figure=1)
+
+    PCargs_2.name = 'LC1_2'
+    PCargs_2.type = 'LC-C'
+    PCargs_2.initpoint = 'EQ1_2:H2'
+    PCargs_2.freepars = ['i_app']
+    PCargs_2.MaxNumPoints = 1000
+    PCargs_2.MaxStepSize = 0.1
+    PCargs_2.StepSize = 1e-2
+    PCargs_2.LocBifPoints = 'all'
+    PCargs_2.SaveEigen = True
+    PyCont_2.newCurve(PCargs_2)
+    PyCont_2['LC1_2'].forward()
+    PyCont_2['LC1_2'].display(('i_app', 'v_min'), stability=True, figure=1)
+    PyCont_2['LC1_2'].display(('i_app', 'v_max'), stability=True, figure=1)
+
+    plt.xlim([-0.1, 0.2])
+    plt.ylim([-80, 20])
 
 
 def __figure4c__(ix=0):
@@ -140,3 +193,5 @@ def __figure4c__(ix=0):
     else:
         set_properties(x_label="Voltage (mV)", y_label="I$_{stim} ( \mu A/cm^{2}$)", x_tick=[-70, -60, -50],
                        y_tick=[-0.1, 0, 0.1, 0.2], x_limits=(-70, -50), y_limits=(-0.1, 0.2))
+
+# run()
