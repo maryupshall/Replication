@@ -8,8 +8,8 @@ def ode_2d(state, t, parameters, exp=np.exp):
     v, h = state
     n = f(h)
 
-    dv = i_app - g_l * (v - e_l) - g_na * (m_inf(v) ** 3) * h * (v - e_na) - g_k * ((n ** 3) * (v - e_k))
-    dh = - (h - (h_inf(v))) / (tau_h(v))
+    dv = i_app - g_l * (v - e_l) - g_na * (m_inf(v, exp=exp) ** 3) * h * (v - e_na) - g_k * ((n ** 3) * (v - e_k))
+    dh = - (h - (h_inf(v, exp=exp))) / (tau_h(v, exp=exp))
 
     return [dv, dh]
 
