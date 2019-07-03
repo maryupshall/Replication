@@ -5,8 +5,7 @@ from sympy import *
 from helpers.nullclines import nullcline_h, nullcline_v
 from helpers.plotting import *
 from ode_functions.current import sodium_current_hack
-from ode_functions.defaults import default_parameters
-from ode_functions.diff_eq import ode_2d, ode_3d, voltage_clamp
+from ode_functions.diff_eq import ode_2d, ode_3d, voltage_clamp, default_parameters
 from ode_functions.gating import *
 
 

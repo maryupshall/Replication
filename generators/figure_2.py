@@ -2,8 +2,7 @@ from scipy.integrate import odeint
 
 from helpers.nullclines import nullcline_h, nullcline_v
 from helpers.plotting import *
-from ode_functions.defaults import default_parameters
-from ode_functions.diff_eq import ode_2d
+from ode_functions.diff_eq import ode_2d, default_parameters
 from ode_functions.gating import *
 
 
@@ -12,11 +11,9 @@ def run():
     plt.subplot2grid((2, 2), (0, 0), colspan=2, rowspan=1)
     __figure2a__()
 
-    plt.subplot2grid((2, 2), (1, 0), colspan=1, rowspan=1)
-    __figure2b__(ix=0)
-
-    plt.subplot2grid((2, 2), (1, 1), colspan=1, rowspan=1)
-    __figure2b__(ix=1)
+    for ix, col in enumerate([0, 1]):
+        plt.subplot2grid((2, 2), (1, col), colspan=1, rowspan=1)
+        __figure2b__(ix=ix)
 
     save_fig('2')
 
@@ -40,7 +37,7 @@ def __figure2a__():
 
         solution = np.vstack((solution, state))
 
-    solution = solution[1:, :]  # TODO: hack for starting shape
+    solution = solution[1:, :]  # first row is [0,0] for starting shape so omit
 
     stimulus = np.zeros(t_solved.shape)
     stimulus[t_solved > times[0]] = currents[1]

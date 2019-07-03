@@ -4,14 +4,12 @@ from sympy import *
 
 from helpers.nullclines import nullcline_v, nullcline_h
 from helpers.plotting import *
-from ode_functions.defaults import default_parameters
-from ode_functions.diff_eq import hs_clamp
-from ode_functions.diff_eq import ode_3d
+from ode_functions.diff_eq import ode_3d, default_parameters, hs_clamp
 from ode_functions.gating import *
 
 
-def run():
-    init_figure(size=(10, 15))
+def run():  # TODO: tight layout?
+    init_figure(size=(8, 8))
     plt.subplot2grid((5, 4), (0, 0), colspan=4, rowspan=1)
     __figure3a__(fig_num=0)
 
@@ -83,7 +81,7 @@ def __figure3b__(ix=0):
     cross_index = np.argmin(np.abs(nv - nh))
     plt.scatter(v[cross_index], nv[cross_index], edgecolors='k', facecolors=style)
 
-    set_properties(x_label="v (mV)", y_label="h", x_tick=[-40, 40], y_tick=[0, 0.2, 0.4, 0.6, 0.8],
+    set_properties(y_label="h", x_tick=[-40, 40], y_tick=[0, 0.2, 0.4, 0.6, 0.8],
                    x_limits=(-80, 50),
                    y_limits=(0, 0.6))
 
@@ -97,7 +95,7 @@ def __figure3c__():
     trajectory = odeint(ode_3d, ic, t, args=(parameters,))  # pre-stimulus solution
     plt.plot(trajectory[:, 2], trajectory[:, 0], c='grey')
 
-    set_properties(x_label="h$_{s}$", y_label="v (mV)", x_tick=[0, 0.2, 0.4, 0.6, 0.8, 1], y_tick=[-80, -40, 0, 40])
+    set_properties(y_label="v (mV)", x_tick=[0, 0.2, 0.4, 0.6, 0.8, 1], y_tick=[-80, -40, 0, 40])
 
 
 def __figure3c_continuation__():
@@ -108,7 +106,7 @@ def __figure3c_continuation__():
     DSargs_3 = PyDSTool.args(name='bifn_3')
     DSargs_3.pars = {'h_s': 0}
     DSargs_3.varspecs = {'v': PyDSTool.convertPowers(str(dydt[0])),
-                       'h': PyDSTool.convertPowers(str(dydt[1]))}
+                         'h': PyDSTool.convertPowers(str(dydt[1]))}
     DSargs_3.ics = {'v': 0, 'h': 0}
 
     ode_3 = PyDSTool.Generator.Vode_ODEsystem(DSargs_3)
@@ -141,6 +139,8 @@ def __figure3c_continuation__():
     PyCont_3['LC1_3'].backward()
     PyCont_3['LC1_3'].display(('h_s', 'v_min'), stability=True, figure=1)
     PyCont_3['LC1_3'].display(('h_s', 'v_max'), stability=True, figure=1)
+
+    plt.gca().set_title('')
 
     plt.xlim([0, 1])
 

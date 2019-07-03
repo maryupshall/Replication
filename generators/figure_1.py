@@ -2,8 +2,7 @@ from scipy.integrate import odeint
 
 from helpers.plotting import *
 from ode_functions.current import sodium_current
-from ode_functions.defaults import default_parameters
-from ode_functions.diff_eq import ode_2d, ode_3d, ode_5d, voltage_clamp
+from ode_functions.diff_eq import ode_2d, ode_3d, ode_5d, voltage_clamp, default_parameters
 from ode_functions.gating import *
 
 
@@ -18,11 +17,9 @@ def run():
     plt.subplot2grid((2, 6), (0, 4), colspan=2, rowspan=1)
     __figure1c__()
 
-    plt.subplot2grid((2, 6), (1, 0), colspan=3, rowspan=1)
-    __figure1d__(ix=0)
-
-    plt.subplot2grid((2, 6), (1, 3), colspan=3, rowspan=1)
-    __figure1d__(ix=1)
+    for ix, col in enumerate([0, 3]):
+        plt.subplot2grid((2, 6), (1, col), colspan=3, rowspan=1)
+        __figure1d__(ix=ix)
 
     save_fig("1")
 
@@ -58,23 +55,30 @@ def __figure1b__():
     clamp_current = np.array([])
     all_time = np.array([])
 
-    packet = [[-100, 0],
-              [0, 3],
-              [3, 100],
-              [100, 103],
-              [103, 200],
-              [200, 203],
-              [203, 300],
-              [300, 303],
-              [303, 400],
-              [400, 403],
-              [403, 500],
-              [500, 503],
-              [503, 600]]  # TODO: programmatically generate +100, +3, +100, +3?
+    # packet = [[-100, 0],
+    #           [0, 3],
+    #           [3, 100],
+    #           [100, 103],
+    #           [103, 200],
+    #           [200, 203],
+    #           [203, 300],
+    #           [300, 303],
+    #           [303, 400],
+    #           [400, 403],
+    #           [403, 500],
+    #           [500, 503],
+    #           [503, 600]]
 
-    parameters = default_parameters(g_na=0.00000912)  # need to divide given value by 2 to get correct graph
+    last_set = 500
+    start_times = np.ravel(list(zip(np.arange(0, last_set + 1, 100), np.arange(3, last_set + 4, 100))))
+    end_times = np.ravel(list(zip(np.arange(3, last_set + 100 + 1, 100), np.arange(100, last_set + 100 + 4, 100))))
+    packet = list(zip(start_times, end_times))
+    packet.insert(0, (-100, 0))
+
+    parameters = default_parameters(g_na=0.00000592)  # need to divide given value by 2 to get correct graph
     parameters.append(ode_3d)
     ic = [-70, 0, 0]
+
     for (t0, t1) in packet:
         time = np.arange(t0, t1, 0.05)  # off
         all_time = np.concatenate((all_time, time))
@@ -83,11 +87,9 @@ def __figure1b__():
         v = state[:, 0]
         h = state[:, 1]
         hs = state[:, 2]
+
         clamp_current = np.concatenate((clamp_current, sodium_current(v, m_inf(v), parameters, h=h, hs=hs)))
-        if ic[0] == -70:
-            ic = [0, h[-1], hs[-1]]
-        else:
-            ic = [-70, h[-1], hs[-1]]
+        ic = [0 if ic[0] == -70 else -70, h[-1], hs[-1]]  # move clamp to 0 if currently clamped to -70 (vise versa)
 
     plt.plot(all_time, 1e6 * clamp_current, 'k')
     set_properties(x_label="time (ms)", y_label="I$_{Na}$ (pA)", x_tick=[0, 200, 400], y_tick=[-200, 0],
@@ -106,7 +108,7 @@ def __figure1c__():
 
     plt.plot(h, n, c="grey")
     plt.plot(h, list(map(f, h)), "k")
-    set_properties(x_label="h", y_label="n", x_tick=[0, 0.2, 0.4, 0.6], y_tick=np.arange(0, 1, 0.2))
+    set_properties(x_label="h", y_label="n", x_tick=[0, 0.2, 0.4, 0.6], y_tick=np.arange(0, 1, 0.2), x_limits=[0, 0.7])
     plt.legend(["n", "n=f(h)"])
 
 
@@ -121,4 +123,7 @@ def __figure1d__(ix=0):
     state = odeint(ode_function, ic, t, args=(parameters,), atol=1e-3)
 
     plt.plot(t, state[:, 0], "k")
-    set_properties(y_label="v (mV)", y_tick=[-80, -40, 0])
+    if ix == 0:
+        set_properties(y_label="v (mV)", y_tick=[-80, -40, 0], y_limits=[-80, 20])
+    else:
+        set_properties()

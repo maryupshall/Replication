@@ -1,14 +1,16 @@
 from scipy.integrate import odeint
 
-from ode_functions.defaults import default_parameters
-from ode_functions.diff_eq import synaptic_3d
-from ode_functions.current import nmda_current, ampa_current
-from ode_functions.gating import *
 from helpers.plotting import *
+from ode_functions.current import nmda_current, ampa_current
+from ode_functions.diff_eq import synaptic_3d, default_parameters
+from ode_functions.gating import *
 
 
 def run():
+    init_figure(size=(6, 6))
     __figure6__()
+
+    save_fig('6')
 
 
 def __figure6__():
@@ -19,7 +21,6 @@ def __figure6__():
     all_parameters = [parameter_sets1, parameter_sets2]
     times = [2000, 8000, 10000]
 
-    init_figure(size=(6, 6))
     for iz, parameter_sets in enumerate(all_parameters):
         for ix, (condition, parameter_set) in enumerate(zip(conditions, parameter_sets)):
             t0 = 0
@@ -47,15 +48,13 @@ def __figure6__():
 
                 solution = np.vstack((solution, state))
 
-            solution = solution[1:, :]  # TODO: hack for starting shape
+            solution = solution[1:, :]  # first row is [0,0] for starting shape so omit
 
             plt.plot(t_solved, solution[:, 0], 'k')
             set_properties(y_label="V (mV)", y_tick=[-80, -40, 0])
 
-            if (2 * ix + iz + 1)==5 or (2 * ix + iz + 1)==6:
+            if (2 * ix + iz + 1) == 5 or (2 * ix + iz + 1) == 6:
                 stimulus = np.zeros(t_solved.shape)
                 stimulus[(t_solved > times[0]) & (t_solved < times[1])] = 1
 
-                plt.plot(t_solved, 10*stimulus-80, 'grey')
-
-    save_fig('6')
+                plt.plot(t_solved, 10 * stimulus - 80, 'grey')
