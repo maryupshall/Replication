@@ -7,7 +7,7 @@ from ode_functions.gating import *
 
 
 def run():
-    init_figure(size=(7, 6))
+    init_figure(size=(6, 3))
     plt.subplot2grid((2, 2), (0, 0), colspan=2, rowspan=1)
     __figure2a__()
 

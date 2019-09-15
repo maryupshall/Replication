@@ -9,7 +9,7 @@ from ode_functions.gating import *
 
 
 def run():  # TODO: tight layout?
-    init_figure(size=(8, 8))
+    init_figure(size=(6, 8))
     plt.subplot2grid((5, 4), (0, 0), colspan=4, rowspan=1)
     __figure3a__(fig_num=0)
 
