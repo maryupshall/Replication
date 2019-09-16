@@ -51,10 +51,21 @@ def __figure6__():
             solution = solution[1:, :]  # first row is [0,0] for starting shape so omit
 
             plt.plot(t_solved, solution[:, 0], 'k')
-            set_properties(y_label="V (mV)", y_tick=[-80, -40, 0])
 
+            x_label = ""
+            x_ticklabel = []
             if (2 * ix + iz + 1) == 5 or (2 * ix + iz + 1) == 6:
                 stimulus = np.zeros(t_solved.shape)
                 stimulus[(t_solved > times[0]) & (t_solved < times[1])] = 1
 
                 plt.plot(t_solved, 10 * stimulus - 80, 'grey')
+                x_label = "t (ms)"
+                x_ticklabel = None
+
+            y_label = "V (mV)"
+            y_ticklabel = None
+            if iz == 1:
+                y_label = ""
+                y_ticklabel = []
+            set_properties(y_label=y_label, y_tick=[-80, -40, 0], y_ticklabel=y_ticklabel, x_tick=[0, 5000, 10000],
+                           x_label=x_label, x_ticklabel=x_ticklabel)

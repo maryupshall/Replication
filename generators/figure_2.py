@@ -7,7 +7,7 @@ from ode_functions.gating import *
 
 
 def run():
-    init_figure(size=(6, 3))
+    init_figure(size=(5, 3))
     plt.subplot2grid((2, 2), (0, 0), colspan=2, rowspan=1)
     __figure2a__()
 
@@ -63,5 +63,10 @@ def __figure2b__(ix=0):
     cross_index = np.argmin(np.abs(nv - nh))
     plt.scatter(v[cross_index], nv[cross_index], edgecolors='k', facecolors=style)
 
-    set_properties(x_label="v (mV)", y_label="h", x_tick=[-50, 0, 50], y_tick=[0, 0.1, 0.2, 0.3, 0.4],
-                   x_limits=[-75, 50], y_limits=[0, 0.4])
+    y_label = "h"
+    y_ticklabel = None
+    if ix == 1:
+        y_label = ""
+        y_ticklabel = []
+    set_properties(x_label="v (mV)", y_label=y_label, x_tick=[-50, 0, 50], y_tick=[0, 0.1, 0.2, 0.3, 0.4],
+                   x_limits=[-75, 50], y_limits=[0, 0.4], y_ticklabel=y_ticklabel)

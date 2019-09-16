@@ -7,7 +7,7 @@ from ode_functions.gating import *
 
 
 def run():
-    init_figure(size=(6, 3))
+    init_figure(size=(2, 1))
     plt.subplot2grid((2, 6), (0, 0), colspan=2, rowspan=1)
     __figure1a__()
 
@@ -124,6 +124,10 @@ def __figure1d__(ix=0):
 
     plt.plot(t, state[:, 0], "k")
     y_label = 'v (mV)'
+    y_tick_label = None
+
     if ix > 0:
         y_label = ""
-    set_properties(x_label="time (ms)", y_label=y_label, y_tick=[-80, -40, 0], y_limits=[-80, 20])
+        y_tick_label = []
+    set_properties(x_label="time (ms)", y_label=y_label, y_tick=[-80, -40, 0], y_limits=[-80, 20],
+                   y_ticklabel=y_tick_label)

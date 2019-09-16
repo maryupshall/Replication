@@ -9,7 +9,7 @@ def sodium_current(v, m, parameters, h=1, hs=1):
     return g_na * (v - e_na) * (m ** 3) * h * hs
 
 
-def sodium_current_hack(v, h, parameters, hs=1):
+def total_current(v, h, parameters, hs=1):
     p = parameters
     i_app, g_na, g_k, g_l, e_na, e_k, e_l, _ = p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7:]
 
