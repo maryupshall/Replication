@@ -7,24 +7,24 @@ from ode_functions.gating import *
 
 
 def run():
-    init_figure(size=(2, 1))
+    init_figure(size=(6, 3))
     plt.subplot2grid((2, 6), (0, 0), colspan=2, rowspan=1)
-    __figure1a__()
+    __figure1a__('A')
 
     plt.subplot2grid((2, 6), (0, 2), colspan=2, rowspan=1)
-    __figure1b__()
+    __figure1b__('B')
 
     plt.subplot2grid((2, 6), (0, 4), colspan=2, rowspan=1)
-    __figure1c__()
+    __figure1c__('C')
 
     for ix, col in enumerate([0, 3]):
         plt.subplot2grid((2, 6), (1, col), colspan=3, rowspan=1)
-        __figure1d__(ix=ix)
+        __figure1d__('D' + str(ix + 1), ix=ix)
 
     save_fig("1")
 
 
-def __figure1a__():
+def __figure1a__(title):
     parameters = default_parameters(g_na=0.00000592 / 1.5)  # need to divide given value by 1.5 to get correct graph
     parameters.append(None)
     time = np.arange(0, 100, 0.1)
@@ -48,10 +48,10 @@ def __figure1a__():
     plt.plot(voltage, current[:, 1], color='grey')
     plt.plot(voltage, current[:, 0], 'k--')
 
-    set_properties(x_label="V (mV)", y_label="peak I$_{Na}$", x_tick=[-80, -40, 0, 40], y_tick=[-160, 0])
+    set_properties(title, x_label="V (mV)", y_label="peak I$_{Na}$", x_tick=[-80, -40, 0, 40], y_tick=[-160, 0])
 
 
-def __figure1b__():
+def __figure1b__(title):
     clamp_current = np.array([])
     all_time = np.array([])
 
@@ -92,11 +92,11 @@ def __figure1b__():
         ic = [0 if ic[0] == -70 else -70, h[-1], hs[-1]]  # move clamp to 0 if currently clamped to -70 (vise versa)
 
     plt.plot(all_time, 1e6 * clamp_current, 'k')
-    set_properties(x_label="time (ms)", y_label="I$_{Na}$ (pA)", x_tick=[0, 200, 400], y_tick=[-200, 0],
+    set_properties(title, x_label="time (ms)", y_label="I$_{Na}$ (pA)", x_tick=[0, 200, 400], y_tick=[-200, 0],
                    x_limits=[-50, 600])
 
 
-def __figure1c__():
+def __figure1c__(title):
     parameters = default_parameters()
 
     t = np.arange(0, 4200, 0.01)
@@ -108,11 +108,11 @@ def __figure1c__():
 
     plt.plot(h, n, c="grey")
     plt.plot(h, list(map(f, h)), "k")
-    set_properties(x_label="h", y_label="n", x_tick=[0, 0.2, 0.4, 0.6], y_tick=np.arange(0, 1, 0.2), x_limits=[0, 0.7])
+    set_properties(title, x_label="h", y_label="n", x_tick=[0, 0.2, 0.4, 0.6], y_tick=np.arange(0, 1, 0.2), x_limits=[0, 0.7])
     make_legend(["n", "n=f(h)"])
 
 
-def __figure1d__(ix=0):
+def __figure1d__(title, ix=0):
     ode_functions = [ode_3d, ode_5d]
     parameters = default_parameters()
     t = np.arange(0, 4300, 0.01)
@@ -129,5 +129,5 @@ def __figure1d__(ix=0):
     if ix > 0:
         y_label = ""
         y_tick_label = []
-    set_properties(x_label="time (ms)", y_label=y_label, y_tick=[-80, -40, 0], y_limits=[-80, 20],
+    set_properties(title, x_label="time (ms)", y_label=y_label, y_tick=[-80, -40, 0], y_limits=[-80, 20],
                    y_ticklabel=y_tick_label)

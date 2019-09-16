@@ -52,6 +52,14 @@ def __figure6__():
 
             plt.plot(t_solved, solution[:, 0], 'k')
 
+            title = "A"
+            y_label = "V (mV)"
+            y_ticklabel = None
+            if iz == 1:
+                y_label = ""
+                y_ticklabel = []
+                title = "B"
+            title += str(ix + 1)
             x_label = ""
             x_ticklabel = []
             if (2 * ix + iz + 1) == 5 or (2 * ix + iz + 1) == 6:
@@ -62,10 +70,6 @@ def __figure6__():
                 x_label = "t (ms)"
                 x_ticklabel = None
 
-            y_label = "V (mV)"
-            y_ticklabel = None
-            if iz == 1:
-                y_label = ""
-                y_ticklabel = []
-            set_properties(y_label=y_label, y_tick=[-80, -40, 0], y_ticklabel=y_ticklabel, x_tick=[0, 5000, 10000],
+            set_properties(title, y_label=y_label, y_tick=[-80, -40, 0], y_ticklabel=y_ticklabel,
+                           x_tick=[0, 5000, 10000],
                            x_label=x_label, x_ticklabel=x_ticklabel)

@@ -18,9 +18,10 @@ def make_legend(legend):
     plt.legend(legend, fontsize=8)
 
 
-def set_properties(x_label="", y_label="", x_tick=None, y_tick=None, x_limits=None, y_limits=None, y_ticklabel=None, x_ticklabel=None):
-    plot_label_size = 10
-    tick_label_size = 8
+def set_properties(title, x_label="", y_label="", x_tick=None, y_tick=None, x_limits=None, y_limits=None,
+                   y_ticklabel=None, x_ticklabel=None):
+    plot_label_size = 12
+    tick_label_size = 10
 
     plt.xlabel(x_label, size=plot_label_size)
     if x_ticklabel is not None:
@@ -41,4 +42,5 @@ def set_properties(x_label="", y_label="", x_tick=None, y_tick=None, x_limits=No
     plt.xlim(x_limits)
     plt.ylim(y_limits)
 
+    plt.text(0, 1, title, horizontalalignment='left', verticalalignment='bottom', transform=plt.gca().transAxes)
     plt.tight_layout()
