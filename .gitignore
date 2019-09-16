@@ -410,3 +410,17 @@ venv.bak/
 auto_temp/
 auto*.py
 _auto*.so
+
+*.aux
+*.idx
+*.log
+*.toc
+*.ist
+*.bbl
+*.blg
+*.bcf
+*.run.xml
+*.out
+article.fls
+article.fdb_latexmk
+*.cpt

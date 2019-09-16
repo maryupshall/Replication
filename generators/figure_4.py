@@ -4,33 +4,32 @@ from sympy import *
 
 from helpers.nullclines import nullcline_h, nullcline_v
 from helpers.plotting import *
-from ode_functions.current import sodium_current_hack
-from ode_functions.defaults import default_parameters
-from ode_functions.diff_eq import ode_2d, ode_3d, voltage_clamp
+from ode_functions.current import total_current
+from ode_functions.diff_eq import ode_2d, ode_3d, voltage_clamp, default_parameters
 from ode_functions.gating import *
 
 
 def run():
-    init_figure(size=(10, 10))
+    init_figure(size=(6, 7))
     plt.subplot2grid((4, 2), (0, 0), colspan=1, rowspan=1)
-    __figure4a__(ix=0)
+    __figure4a__("A1", ix=0)
     plt.subplot2grid((4, 2), (0, 1), colspan=1, rowspan=1)
-    __figure4a__(ix=1)
+    __figure4a__("A2", ix=1)
 
     plt.subplot2grid((4, 2), (1, 0), colspan=2, rowspan=1)
-    __figure4b__(ix=0)
+    __figure4b__("B1", ix=0)
     plt.subplot2grid((4, 2), (2, 0), colspan=2, rowspan=1)
-    __figure4b__(ix=1)
+    __figure4b__("B2", ix=1)
 
     plt.subplot2grid((4, 2), (3, 0), colspan=1, rowspan=1)
-    __figure4c__(ix=0)
+    __figure4c__("C1", ix=0)
     plt.subplot2grid((4, 2), (3, 1), colspan=1, rowspan=1)
-    __figure4c__(ix=1)
+    __figure4c__("C2", ix=1)
 
     save_fig('4')
 
 
-def __figure4a__(ix=0):
+def __figure4a__(title, ix=0):
     i_app_list_set = [[0, 3.5], [0.16, 0.16, 0.16]]
     hs_list_set = [[1, 1], [0.6, 0.2, 0.05]]
     v = np.arange(-90, 50)
@@ -46,19 +45,26 @@ def __figure4a__(ix=0):
         plt.plot(v, nv, 'r')
 
     if ix == 0:
-        set_properties(x_label="v (mV)", y_label="h", x_tick=[-40, 0], y_tick=[0, 0.05, 0.1, 0.15],
+        set_properties(title, x_label="v (mV)", y_label="h", x_tick=[-40, 0], y_tick=[0, 0.05, 0.1, 0.15],
                        x_limits=(-40, 5),
                        y_limits=(0, 0.15))
     else:
-        set_properties(x_label="v (mV)", y_label="h", x_tick=[-60, 20], y_tick=[0, 0.2, 0.4], x_limits=(-80, 20),
-                       y_limits=(0, 0.4))
+        set_properties(title, x_label="v (mV)", x_tick=[-60, 20], y_tick=[0, 0.2, 0.4], x_limits=(-80, 20),
+                       y_limits=(0, 0.4), y_ticklabel=[])
 
 
-def __figure4b__(ix=0):
+def __figure4b__(title, ix=0):
     if ix == 0:
         __figure4b1_continuation__()
+        x_label = ""
+        x_tick = [-6, 0, 6]
     else:
         __figure4b2_continuation__()
+        x_label = "$I_{app}$"
+        x_tick = [-0.1, 0, 0.2, 0.1]
+
+    set_properties(title, y_label='$V_m$ (mV)', y_tick=[-80, 0, 30], x_label=x_label, x_tick=x_tick,
+                   x_limits=(min(x_tick), max(x_tick)))
 
 
 def __figure4b1_continuation__():
@@ -97,7 +103,7 @@ def __figure4b1_continuation__():
     PCargs_1.type = 'LC-C'
     PCargs_1.initpoint = 'EQ1_1:H1'
     PCargs_1.freepars = ['i_app']
-    PCargs_1.MaxNumPoints = 1500
+    PCargs_1.MaxNumPoints = 500
     PCargs_1.MaxStepSize = 0.1
     PCargs_1.LocBifPoints = 'all'
     PCargs_1.SaveEigen = True
@@ -106,7 +112,9 @@ def __figure4b1_continuation__():
     PyCont_1['LC1_1'].display(('i_app', 'v_min'), stability=True, figure=1)
     PyCont_1['LC1_1'].display(('i_app', 'v_max'), stability=True, figure=1)
 
-    plt.xlim([-5, 5])
+    PyCont_1.plot.toggleLabels(visible='off', bytype=['P', 'RG'])
+    PyCont_1.plot.togglePoints(visible='off', bytype=['P', 'RG'])
+    plt.gca().set_title('')
 
 
 def __figure4b2_continuation__():
@@ -144,7 +152,7 @@ def __figure4b2_continuation__():
     PCargs_2.type = 'LC-C'
     PCargs_2.initpoint = 'EQ1_2:H2'
     PCargs_2.freepars = ['i_app']
-    PCargs_2.MaxNumPoints = 1000
+    PCargs_2.MaxNumPoints = 400
     PCargs_2.MaxStepSize = 0.1
     PCargs_2.StepSize = 1e-2
     PCargs_2.LocBifPoints = 'all'
@@ -154,11 +162,12 @@ def __figure4b2_continuation__():
     PyCont_2['LC1_2'].display(('i_app', 'v_min'), stability=True, figure=1)
     PyCont_2['LC1_2'].display(('i_app', 'v_max'), stability=True, figure=1)
 
-    plt.xlim([-0.1, 0.2])
-    plt.ylim([-80, 20])
+    PyCont_2.plot.toggleLabels(visible='off', bytype=['P', 'RG'])
+    PyCont_2.plot.togglePoints(visible='off', bytype=['P', 'RG'])
+    plt.gca().set_title('')
 
 
-def __figure4c__(ix=0):
+def __figure4c__(title, ix=0):
     ode_functions = [ode_2d, ode_3d]
     v_list = np.arange(-100, 20, 0.5)
     t = np.arange(0, 1000, 0.1)
@@ -178,17 +187,15 @@ def __figure4c__(ix=0):
         v = state[:, 0]
         hs = 1 if np.shape(state)[1] == 2 else state[:, 2]
 
-        membrane_current[i] = -sodium_current_hack(v, h, parameters, hs=hs)[-1]
+        membrane_current[i] = -total_current(v, h, parameters, hs=hs)[-1]
 
     plt.plot(v_list, membrane_current, 'k')
     plt.plot(v_list, v_list * [0], '--', color='grey')
 
     if ix == 0:
-        set_properties(x_label="Voltage (mV)", y_label="I$_{stim} ( \mu A/cm^{2}$)", x_tick=[-80, -40],
+        set_properties(title, x_label="Voltage (mV)", y_label="I$_{stim} ( \mu A/cm^{2}$)", x_tick=[-80, -40],
                        y_tick=[-5, 0, 5],
                        x_limits=(-100, -20), y_limits=(-5, 5))
     else:
-        set_properties(x_label="Voltage (mV)", y_label="I$_{stim} ( \mu A/cm^{2}$)", x_tick=[-70, -60, -50],
-                       y_tick=[-0.1, 0, 0.1, 0.2], x_limits=(-70, -50), y_limits=(-0.1, 0.2))
-
-# run()
+        set_properties(title, x_label="Voltage (mV)", x_tick=[-70, -60, -50],
+                       y_tick=[-0.1, 0, 0.1, 0.2], x_limits=(-70, -50), y_limits=(-0.1, 0.2), y_ticklabel=[])

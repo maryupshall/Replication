@@ -1,8 +1,7 @@
 import numpy as np
 from scipy.optimize import newton
 
-from ode_functions.defaults import default_parameters
-from ode_functions.diff_eq import h_inf, f, m_inf
+from ode_functions.diff_eq import h_inf, f, m_inf, default_parameters
 
 
 def nullcline_h(v):

@@ -55,10 +55,10 @@ def f(h):
 
     fh = np.asarray(a0 + a1 * h + a2 * (h ** 2) + a3 * (h ** 3))
 
-    try:
+    try:  # if its an array
         fh[fh < 0] = 0
         fh[fh > 1] = 1
-    except:
+    except TypeError:
         pass
 
     return fh
