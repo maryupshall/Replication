@@ -11,7 +11,7 @@ title: "ReScience (R)evolution"
 # Affiliation "*" means contact author
 authors:
   - name: Mary Upshall
-    orcid: FILL_IN
+    orcid: 0000-0003-0376-843X
     email: mupsh059@uottawa.ca
     affiliations: 1,2,3,*       # * is for contact author
     
@@ -39,7 +39,7 @@ affiliations:
 
 
 # List of keywords (adding the programming language might be a good idea)
-keywords: Python, MARY FILL IN
+keywords: Python, depolarization block, dopaminergic neurons
 
 # Code URL and DOI (url is mandatory for replication, doi after acceptance)
 # You can get a DOI for your code from Zenodo,
